@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.2">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    span.s1 {font: 12.0px 'Hiragino Sans'}
+    span.s2 {font: 12.0px 'Lucida Grande'}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="es"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Portafolio de Arquitectura&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>* { margin: 0; padding: 0; box-sizing: border-box; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { background-color: #1e1e1e; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; color: #fff; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.flipbook-container { position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: none; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#loading { font-size: 1.1rem; color: #d1d1d1; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.controls { margin-top: 20px; display: flex; gap: 15px; z-index: 10; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 8px 18px; border-radius: 20px; cursor: pointer; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn:hover { background: rgba(255,255,255,0.25); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.page { background-color: #fff; display: flex; justify-content: center; align-items: center; overflow: hidden; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>canvas { width: 100%; height: 100%; object-fit: contain; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="loading"&gt;Cargando portafolio...&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="book" class="flipbook-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="controls" id="controls" style="display: none;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn" id="prev-btn"&gt;<span class="s1">◀</span> Anterior&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn" id="next-btn"&gt;Siguiente <span class="s2">▶</span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const pdfUrl = 'portafolio.pdf';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const bookContainer = document.getElementById('book');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const loadingEl = document.getElementById('loading');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const controlsEl = document.getElementById('controls');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>async function initFlipbook() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const loadingTask = pdfjsLib.getDocument(pdfUrl);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const pdf = await loadingTask.promise;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const firstPage = await pdf.getPage(1);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const viewport = firstPage.getViewport({ scale: 1.5 });</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>for (let pageNum = 1; pageNum &lt;= pdf.numPages; pageNum++) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const page = await pdf.getPage(pageNum);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const pageViewport = page.getViewport({ scale: 1.5 });</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const pageDiv = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>pageDiv.className = 'page';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const canvas = document.createElement('canvas');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const context = canvas.getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>canvas.height = pageViewport.height;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>canvas.width = pageViewport.width;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>await page.render({ canvasContext: context, viewport: pageViewport }).promise;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>pageDiv.appendChild(canvas);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>bookContainer.appendChild(pageDiv);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>loadingEl.style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bookContainer.style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>controlsEl.style.display = 'flex';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const pageFlip = new St.PageFlip(bookContainer, {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>width: viewport.width / 1.5,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>height: viewport.height / 1.5,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>size: "fixed",</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>showCover: true</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>pageFlip.loadFromHTML(document.querySelectorAll('.page'));</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('prev-btn').addEventListener('click', () =&gt; pageFlip.flipPrev());</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('next-btn').addEventListener('click', () =&gt; pageFlip.flipNext());</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} catch (error) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>loadingEl.textContent = 'Error al cargar el archivo. Revisa que el PDF se llame exactamente portafolio.pdf';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>initFlipbook();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
