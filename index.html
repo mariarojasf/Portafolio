@@ -137,34 +137,40 @@
                 bookContainer.style.display = 'block';
                 controlsEl.style.display = 'flex';
 
-                // Calcular dimensiones según el dispositivo
+                // Detección de dispositivo y orientación
                 const screenWidth = window.innerWidth;
                 const screenHeight = window.innerHeight;
                 const isMobilePortrait = screenWidth < 768 && screenHeight > screenWidth;
 
-                let calcHeight = Math.min(screenHeight * 0.78, 800);
-                let calcWidth = calcHeight * aspectRatio;
+                let calcHeight, calcWidth, usePortraitMode;
 
                 if (isMobilePortrait) {
+                    // Teléfono en vertical: 1 sola página grande
                     calcWidth = Math.min(screenWidth * 0.88, 450);
                     calcHeight = calcWidth / aspectRatio;
+                    usePortraitMode = true;
+                } else {
+                    // Computadora o teléfono horizontal: Muestra 2 páginas lado a lado (Libro)
+                    calcHeight = Math.min(screenHeight * 0.78, 750);
+                    calcWidth = calcHeight * aspectRatio;
+                    usePortraitMode = false; // Fuerza el modo de 2 páginas desplegadas
                 }
 
                 const pageFlip = new St.PageFlip(bookContainer, {
                     width: Math.round(calcWidth),
                     height: Math.round(calcHeight),
                     size: "fixed",
-                    minWidth: 200,
+                    minWidth: 150,
                     maxWidth: 1000,
-                    minHeight: 300,
+                    minHeight: 250,
                     maxHeight: 1200,
-                    showCover: true,             // Portada individual sola al inicio
-                    usePortrait: true,           // En móviles cambia automáticamente a 1 sola página vertical
+                    showCover: true,             // Portada sola al inicio
+                    usePortrait: usePortraitMode, // En PC activa modo 2 páginas obligatoriamente
                     startPage: 0,
                     drawShadow: true,
                     maxShadowOpacity: 0.5,
                     showPageCorners: true,
-                    mobileScrollSupport: false   // Evita conflictos al deslizar con los dedos en teléfonos
+                    mobileScrollSupport: false
                 });
 
                 pageFlip.loadFromHTML(document.querySelectorAll('.page'));
